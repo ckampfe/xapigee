@@ -1,0 +1,46 @@
+preflow:
+  request:
+    - extract-credentials
+    - verify-api-key
+    - spike-arrest
+    - load-configuration
+    - oauth-callout
+flows:
+  target-reward-mashup:
+    path: "/{reward_id}/target"
+    verb: "POST"
+    request:
+      - extract-request-params
+      - set-target-trinket-request-params
+    response:
+      - parse-response
+      - join-program-callout
+      - get-business-callout
+      - parse-business-callout-response
+      - business-mashup
+  another-unreward:
+    path: "/{reward_id}/untarget"
+    verb: "POST"
+    request:
+      - extract-request-params
+      - set-target-reward-request-params
+    response:
+      - parse-response
+      - ok-res
+  defaultFlow:
+    request:
+      - 404-error
+    response: null
+faultrules:
+  invalid_key_rule:
+    - 401-error
+    - name: "InvalidApiKey"
+httpproxyconnection:
+  basepath: "/ios/v2/rewards"
+routerules:
+  target-reward:
+    path: "/{reward_id}/target"
+    verb: "POST"
+  untarget-reward:
+    path: "/{reward_id}/untarget"
+    verb: "POST"
