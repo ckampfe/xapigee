@@ -1,4 +1,4 @@
-defmodule Composer do
+defmodule Xapigee.Composer do
   def build([], doc), do: Enum.reverse doc
 
   def build([{'preflow', props}|rest], doc) do
@@ -28,11 +28,7 @@ defmodule Composer do
         end
       )
 
-    flows = """
-    <Flows>
-      <%= flow_props %>
-    </Flows>
-    """ |> EEx.eval_string [flow_props: flow_props]
+    flows = ["<Flows>"] ++ flow_props ++ "</Flows>\n"
 
     build(rest, [flows|doc])
   end
@@ -50,7 +46,7 @@ defmodule Composer do
   end
 
   def build([{'response', :null}|rest], doc) do
-    build(rest, ["  <Reponse />"|doc])
+    build(rest, ["  <Response />"|doc])
   end
 
   def build([{'response', props}|rest], doc) do
@@ -82,8 +78,6 @@ defmodule Composer do
     """ |> EEx.eval_string [props: build(props, [])]
 
     build(rest, [httpproxyconnection|doc])
-    # <BasePath>/ios/v2/rewards</BasePath>
-    # <VirtualHost>secure</VirtualHost>
   end
 
   def build([{'basepath', basepath}|rest], doc) do
